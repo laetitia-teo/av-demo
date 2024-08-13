@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<title>Tiny SwissGL example</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="swissgl.js"></script>
+<style>
+    body, html {margin: 0; padding: 0; overflow: hidden;}
+    #c {width:100vw; height: 100vh}
+</style>
+<canvas id="c"></canvas>
+<script>
+    "use strict";
+    const canvas = document.getElementById('c');
+    const glsl = SwissGL(canvas);
+    glsl.loop(({time})=>{
+        glsl.adjustCanvas();        
+        // glsl({Aspect:'fit', time,
+        //     Grid: [8,8], VP:`
+        //     vec2 p = (vec2(ID.xy)+0.5) / vec2(Grid.xy);
+        //     vec3 rnd = hash(ID);
+        //     float phase = rnd.x*TAU, freq = rnd.y*3.0+0.5;
+        //     float r = sin(phase + freq*time)*0.5+0.5;
+        //     varying vec3 color = mix(
+        //         vec3(0.1, 0.1, 0.6), vec3(0.8, 0.6, 0.1), r);
+        //     VPos.xy = 2.0*p.xy-1.0 + XY*r*0.1;`, 
+        //     FP:`color,1`});
+        glsl({Aspect:'cover', time, FP:`
+        vec3 palette( float t ) {
+            vec3 a = vec3(0.5, 0.5, 0.5);
+            vec3 b = vec3(0.5, 0.5, 0.5);
+            vec3 c = vec3(1.0, 1.0, 1.0);
+            vec3 d = vec3(0.263,0.416,0.557);
+
+            return a + b*cos( 6.28318*(c*t+d) );
+        }
+        void fragment() {
+            vec2 uv = XY;
+            vec2 uv0 = uv;
+            vec3 finalColor = vec3(0.0);
+            for (float i = 0.0; i < 4.0; i++) {
+                uv = fract(uv * 1.5) - 0.5;
+                float d = length(uv) * exp(-length(uv0));
+                vec3 col = palette(length(uv0) + i*.4 + time*.4);
+                d = sin(d*8. + time)/8.;
+                d = abs(d);
+                d = pow(0.01 / d, 1.2);
+                finalColor += col * d;
+            }
+            FOut = vec4(finalColor, 1.0);
+        }`})
+        // glsl({T, Aspect:'cover', FP:`for(O*=i;i++<44.;)p=t*rd,p.z-=2.,l=length(p),p/=l*.1,t+=d=min(l-.3,T*.1)+.1,O+=.05/(.4+d)*mix(S(.5,.7,sin(p.x+cos(p.y)*cos(p.z))*sin(p.z+sin(p.y)*cos(p.x+T))),1.,.15/l/l)*S(5.,0.,l)*(1.+cos(t*3.+vec4(0,1,2,0)));`});
+    });
+</script>

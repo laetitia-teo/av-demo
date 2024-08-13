@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<title>SwissGL demos</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="demo/style.css">
+
+<script src='swissgl.js'></script>
+<script src='audio.js'></script>
+<script src="demo/dat.gui.min.js"> </script>
+
+<script src='demo/Spectrogram.js'></script>
+<script src='demo/fractalCircleGons.js'></script>
+<script src='demo/Aurora.js'></script>
+<script src='demo/Raymarching.js'></script>
+<script src='demo/main.js'></script>
+
+<details id="panel" open>
+    <summary><a href="https://github.com/google/swissgl">SwissGL</a> demos</summary>
+    <div id="cards"></div>
+    <div id="log"></div>
+</details>
+<div id="demo">
+    <canvas id="c" width="640" height="360"></canvas>
+    <div id="buttons">
+        <button title="fullscreen" onclick="fullscreen()">⛶</button>
+    </div>
+</div>
+<script>
+    'use strict';
+    const app = new DemoApp([
+        Spectrogram, FractalCircleGon, Aurora, Raymarching
+    ]);
+    function fullscreen() {
+        app.fullscreen();
+    }
+    function toggleGui() {
+        app.toggleGui();
+    }
+    $('#demo').addEventListener('pointerdown', ()=>{
+        hideAbout();
+        if (window.innerWidth < 500) {
+            // close menu on small screens
+            $('#panel').removeAttribute("open");
+        }
+    })
+    $('#panel').addEventListener('click', hideAbout);
+
+</script>
